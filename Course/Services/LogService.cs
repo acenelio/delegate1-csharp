@@ -7,21 +7,19 @@ namespace Course.Services {
     class LogService {
 
         private string _filePath;
-        private PrintService _printService;
 
-        public LogService(string filePath, PrintService printService) {
+        public LogService(string filePath) {
             _filePath = filePath;
-            _printService = printService;
         }
 
-        public int CountLogUsers() {
+        public int CountLogUsers(Action<LogEntry> callback) {
             using (StreamReader sr = File.OpenText(_filePath)) {
                 HashSet<LogEntry> set = new HashSet<LogEntry>(); 
                 while (!sr.EndOfStream) {
                     string[] line = sr.ReadLine().Split(' ');
                     LogEntry entry = new LogEntry(line[0], DateTime.Parse(line[1]));
                     set.Add(entry);
-                    _printService.Print(entry);
+                    callback?.Invoke(entry);
                 }
                 return set.Count;
             }
